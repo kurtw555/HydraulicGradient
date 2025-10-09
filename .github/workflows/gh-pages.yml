@@ -3,6 +3,7 @@ name: Deploy Blazor WASM to GitHub Pages
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -12,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotent@v4
         with:
           dotnet-version: '9.0.x'
 
