@@ -5,14 +5,30 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Add permissions for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -29,18 +45,35 @@ jobs:
         run: dotnet publish ./HydraulicGradient/HydraulicGradient.csproj -c Release -o release --nologo
 
       - name: Update base href for GitHub Pages
-        run: sed -i 's|<base href=\"/\" />|<base href=\"/HydraulicGradient/\" />|g' release/wwwroot/index.html
+        run: |
+          if [ -f "release/wwwroot/index.html" ]; then
+            sed -i 's|<base href="/hydraulicgradient/" />|<base href="/HydraulicGradient/" />|g' release/wwwroot/index.html
+            echo "Updated base href in index.html"
+          else
+            echo "index.html not found in expected location"
+            ls -la release/wwwroot/
+          fi
 
       - name: Copy index.html to 404.html
-        run: cp release/wwwroot/index.html release/wwwroot/404.html
+        run: |
+          if [ -f "release/wwwroot/index.html" ]; then
+            cp release/wwwroot/index.html release/wwwroot/404.html
+            echo "Created 404.html"
+          else
+            echo "Could not create 404.html - index.html not found"
+          fi
 
       - name: Add .nojekyll file
         run: touch release/wwwroot/.nojekyll
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: release/wwwroot
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          path: release/wwwroot
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
