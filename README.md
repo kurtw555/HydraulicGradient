@@ -124,4 +124,4 @@ https://www3.epa.gov/ceampubl/learn2model/part-two/onsite/gradient4plus-ns.html
 If you encounter any issues or have suggestions:
 1. Check existing [Issues](https://github.com/kurtw555/HydraulicGradient/issues)
 2. Create a new issue with detailed description
-3. Include sample data if applicable
+3. Include sample data if applicable.
