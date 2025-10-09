@@ -27,7 +27,24 @@
         <a class="dismiss">🗙</a>
     </div>
     
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        // Debugging: Log the current paths to console
+        console.log('Current base URL:', document.querySelector('base').href);
+        console.log('Current location:', window.location.href);
+        console.log('Framework script should be at:', document.querySelector('base').href + '_framework/blazor.webassembly.js');
+        
+        // Handle potential path issues for GitHub Pages
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we're on GitHub Pages and fix paths if needed
+            if (window.location.hostname === 'kurtw555.github.io' && !window.location.pathname.startsWith('/HydraulicGradient/')) {
+                console.log('Detected GitHub Pages deployment, redirecting to correct path...');
+                window.location.href = 'https://kurtw555.github.io/HydraulicGradient/';
+                return;
+            }
+        });
+    </script>
+    
+    <script src="_framework/blazor.webassembly.js" onerror="console.error('Failed to load blazor.webassembly.js from:', this.src)"></script>
     
     <script>
         window.blazorOnError = function (error) {

@@ -44,14 +44,28 @@ jobs:
       - name: Publish
         run: dotnet publish ./HydraulicGradient/HydraulicGradient.csproj -c Release -o release --nologo
 
+      - name: List published files for debugging
+        run: |
+          echo "Contents of release/wwwroot:"
+          ls -la release/wwwroot/
+          echo "Checking for framework files:"
+          ls -la release/wwwroot/_framework/ | head -10
+
       - name: Update base href for GitHub Pages
         run: |
           if [ -f "release/wwwroot/index.html" ]; then
-            sed -i 's|<base href="/hydraulicgradient/" />|<base href="/HydraulicGradient/" />|g' release/wwwroot/index.html
-            echo "Updated base href in index.html"
+            echo "Original index.html base href:"
+            grep "base href" release/wwwroot/index.html
+            
+            # Replace the base href with the correct GitHub Pages path
+            sed -i 's|<base href="/" />|<base href="/HydraulicGradient/" />|g' release/wwwroot/index.html
+            
+            echo "Updated index.html base href:"
+            grep "base href" release/wwwroot/index.html
           else
-            echo "index.html not found in expected location"
+            echo "ERROR: index.html not found in expected location"
             ls -la release/wwwroot/
+            exit 1
           fi
 
       - name: Copy index.html to 404.html
@@ -61,10 +75,16 @@ jobs:
             echo "Created 404.html"
           else
             echo "Could not create 404.html - index.html not found"
+            exit 1
           fi
 
       - name: Add .nojekyll file
         run: touch release/wwwroot/.nojekyll
+
+      - name: Verify final structure
+        run: |
+          echo "Final structure of release/wwwroot:"
+          find release/wwwroot -type f -name "*.html" -o -name "*.css" -o -name "*.js" | head -20
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
