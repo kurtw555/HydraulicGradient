@@ -4,7 +4,7 @@ A Blazor WebAssembly application that recreates the EPA's online hydraulic gradi
 
 ## ?? Live Demo
 
-Access the application at: **https://yourusername.github.io/HydraulicGradient/**
+Access the application at: **https://kurtw555.github.io/HydraulicGradient/**
 
 ## ?? Features
 
@@ -34,7 +34,7 @@ Access the application at: **https://yourusername.github.io/HydraulicGradient/**
 
 ### Running Locally
 ```bash
-git clone https://github.com/yourusername/HydraulicGradient.git
+git clone https://github.com/kurtw555/HydraulicGradient.git
 cd HydraulicGradient
 dotnet run --project HydraulicGradient
 ```
@@ -59,7 +59,7 @@ dotnet run --project HydraulicGradient
 ## ??? Technical Details
 
 - **Framework**: Blazor WebAssembly (.NET 9)
-- **Hosting**: Static files (no server required)
+- **Hosting**: GitHub Pages (static files)
 - **Calculation Method**: Least-squares plane fitting
 - **Browser Compatibility**: All modern browsers
 - **Offline Support**: Works offline after initial load
@@ -79,6 +79,28 @@ Where:
 The hydraulic gradient is calculated as:
 - **Magnitude**: ?(a² + b²)
 - **Direction**: arctan(a/b) adjusted for quadrant
+
+## ?? Deployment
+
+This application is automatically deployed to GitHub Pages using GitHub Actions. Every push to the `main` branch triggers a new deployment.
+
+### Local Development
+```bash
+# Clone the repository
+git clone https://github.com/kurtw555/HydraulicGradient.git
+cd HydraulicGradient
+
+# Run locally
+dotnet run --project HydraulicGradient
+```
+
+### Manual Deployment
+```bash
+# Build for production
+dotnet publish HydraulicGradient -c Release -o publish
+
+# The publish folder contains all files needed for hosting
+```
 
 ## ?? Contributing
 
@@ -100,10 +122,6 @@ https://www3.epa.gov/ceampubl/learn2model/part-two/onsite/gradient4plus-ns.html
 ## ?? Issues & Support
 
 If you encounter any issues or have suggestions:
-1. Check existing [Issues](https://github.com/yourusername/HydraulicGradient/issues)
+1. Check existing [Issues](https://github.com/kurtw555/HydraulicGradient/issues)
 2. Create a new issue with detailed description
 3. Include sample data if applicable
-
----
-
-**Note**: Replace `yourusername` with your actual GitHub username in all URLs above.
