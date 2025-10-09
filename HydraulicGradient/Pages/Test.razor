@@ -1,0 +1,25 @@
+@page "/test"
+
+<PageTitle>Test Page</PageTitle>
+
+<h1>Test Page</h1>
+
+<p>If you can see this page, Blazor is working correctly.</p>
+
+<p>Current time: @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</p>
+
+<button class="btn btn-primary" @onclick="TestClick">Test Button</button>
+
+@if (clicked)
+{
+    <p class="text-success">Button clicked successfully!</p>
+}
+
+@code {
+    private bool clicked = false;
+
+    private void TestClick()
+    {
+        clicked = true;
+    }
+}

@@ -8,6 +8,13 @@
 <div class="container-fluid">
     <h1 class="text-primary mb-4">EPA On-line Tools for Site Assessment Calculation</h1>
     
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+    
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
             <h3 class="card-title mb-0">Hydraulic Gradient -- Magnitude and Direction</h3>
@@ -144,28 +151,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < DataPoints.Count; i++)
+                        @if (DataPoints != null)
                         {
-                            var index = i;
-                            <tr>
-                                <td>
-                                    @(index + 1)) 
-                                    <input type="text" class="form-control form-control-sm" style="width: 80px; display: inline-block;" 
-                                           @bind="DataPoints[index].Id" />
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" class="form-control form-control-sm" style="width: 100px;" 
-                                           @bind="DataPoints[index].X" />
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" class="form-control form-control-sm" style="width: 100px;" 
-                                           @bind="DataPoints[index].Y" />
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" class="form-control form-control-sm" style="width: 100px;" 
-                                           @bind="DataPoints[index].Head" />
-                                </td>
-                            </tr>
+                            @for (int i = 0; i < DataPoints.Count; i++)
+                            {
+                                var index = i;
+                                <tr>
+                                    <td>
+                                        @(index + 1)) 
+                                        <input type="text" class="form-control form-control-sm" style="width: 80px; display: inline-block;" 
+                                               @bind="DataPoints[index].Id" />
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" class="form-control form-control-sm" style="width: 100px;" 
+                                               @bind="DataPoints[index].X" />
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" class="form-control form-control-sm" style="width: 100px;" 
+                                               @bind="DataPoints[index].Y" />
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" class="form-control form-control-sm" style="width: 100px;" 
+                                               @bind="DataPoints[index].Head" />
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
@@ -229,11 +239,20 @@
     private bool UseHeadSquared = false;
     private string CoordinateUnit = "ft";
     private string HeadUnit = "ft";
+    private string ErrorMessage = "";
 
     protected override void OnInitialized()
     {
-        InitializeDataPoints();
-        SetCurrentDate();
+        try
+        {
+            InitializeDataPoints();
+            SetCurrentDate();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Initialization error: {ex.Message}";
+            Console.WriteLine($"Error in OnInitialized: {ex}");
+        }
     }
 
     private void InitializeDataPoints()
@@ -245,42 +264,84 @@
 
     private void LoadExampleData1()
     {
-        Clear();
-        var exampleData = CalculationService.GetExampleDataSet1();
-        for (int i = 0; i < exampleData.Count && i < DataPoints.Count; i++)
+        try
         {
-            DataPoints[i] = exampleData[i];
+            Clear();
+            var exampleData = CalculationService.GetExampleDataSet1();
+            for (int i = 0; i < exampleData.Count && i < DataPoints.Count; i++)
+            {
+                DataPoints[i] = exampleData[i];
+            }
+            SiteName = "Example Site 1";
+            Calculate();
         }
-        SiteName = "Example Site 1";
-        Calculate();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading example data 1: {ex.Message}";
+            Console.WriteLine($"Error in LoadExampleData1: {ex}");
+        }
     }
 
     private void LoadExampleData2()
     {
-        Clear();
-        var exampleData = CalculationService.GetExampleDataSet2();
-        for (int i = 0; i < exampleData.Count && i < DataPoints.Count; i++)
+        try
         {
-            DataPoints[i] = exampleData[i];
+            Clear();
+            var exampleData = CalculationService.GetExampleDataSet2();
+            for (int i = 0; i < exampleData.Count && i < DataPoints.Count; i++)
+            {
+                DataPoints[i] = exampleData[i];
+            }
+            SiteName = "Example Site 2";
+            Calculate();
         }
-        SiteName = "Example Site 2";
-        Calculate();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading example data 2: {ex.Message}";
+            Console.WriteLine($"Error in LoadExampleData2: {ex}");
+        }
     }
 
     private void Calculate()
     {
-        Result = CalculationService.CalculateGradient(DataPoints, UseHeadSquared);
+        try
+        {
+            ErrorMessage = "";
+            Result = CalculationService.CalculateGradient(DataPoints, UseHeadSquared);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Calculation error: {ex.Message}";
+            Console.WriteLine($"Error in Calculate: {ex}");
+        }
     }
 
     private void Clear()
     {
-        InitializeDataPoints();
-        Result = null;
-        SiteName = "";
+        try
+        {
+            InitializeDataPoints();
+            Result = null;
+            SiteName = "";
+            ErrorMessage = "";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error clearing data: {ex.Message}";
+            Console.WriteLine($"Error in Clear: {ex}");
+        }
     }
 
     private void SetCurrentDate()
     {
-        Date = DateTime.Now.ToString("yyyy-MM-dd");
+        try
+        {
+            Date = DateTime.Now.ToString("yyyy-MM-dd");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error setting date: {ex.Message}";
+            Console.WriteLine($"Error in SetCurrentDate: {ex}");
+        }
     }
 }
